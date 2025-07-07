@@ -1,96 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Price vs Energy Chart</title>
+  <meta charset="UTF-8">
+  <title>Dual Axis Plot - Bright Function</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: sans-serif; margin: 20px; }
-    #chart { width: 100%; max-width: 900px; height: 500px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h2 {
+      text-align: center;
+    }
+    #plot {
+      width: 100%;
+      height: 600px;
+    }
   </style>
 </head>
 <body>
-
-  <h2>Price vs Energy Usage</h2>
-  <div id="chart">Loading...</div>
+  <h2>val_1 and val_2 Over Time</h2>
+  <div id="plot"></div>
 
   <script>
-    // 🔧 1. Supabase Config — fill in your project info
-    const SUPABASE_URL = 'https://your-project.supabase.co';
-    const SUPABASE_KEY = 'your-anon-public-key';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // 🔧 2. Define table and column names
-    const priceTable = 'your_price_table';
-    const energyTable = 'your_energy_table';
-
-    // Column mappings
-    const priceDateCol = 'date';
-    const priceValueCol = 'price';
-
-    const energyDateCol = 'date';
-    const energyValueCol = 'energy_kwh';
-
-    // 🔄 3. Fetch data from both tables
     async function loadData() {
-      const { data: priceData, error: priceError } = await supabase
-        .from(priceTable)
-        .select(`${priceDateCol}, ${priceValueCol}`)
-        .order(priceDateCol, { ascending: true });
+      const response = await fetch("https://qqdcnlmlzfhugkndkrnz.supabase.co/functions/v1/bright-function");
+      const data = await response.json();
 
-      const { data: energyData, error: energyError } = await supabase
-        .from(energyTable)
-        .select(`${energyDateCol}, ${energyValueCol}`)
-        .order(energyDateCol, { ascending: true });
+      const dates = data.map(row => row.date);
+      const val1 = data.map(row => row.val_1);
+      const val2 = data.map(row => row.val_2);
 
-      if (priceError || energyError) {
-        document.getElementById('chart').innerText = 'Error loading data.';
-        console.error(priceError || energyError);
-        return;
-      }
-
-      plotChart(priceData, energyData);
-    }
-
-    // 📊 4. Plot with Plotly
-    function plotChart(priceData, energyData) {
       const trace1 = {
-        x: priceData.map(row => row[priceDateCol]),
-        y: priceData.map(row => row[priceValueCol]),
-        name: 'Price ($)',
+        x: dates,
+        y: val1,
+        name: 'val_1',
         type: 'scatter',
         yaxis: 'y1',
         line: { color: 'blue' }
       };
 
       const trace2 = {
-        x: energyData.map(row => row[energyDateCol]),
-        y: energyData.map(row => row[energyValueCol]),
-        name: 'Energy (kWh)',
+        x: dates,
+        y: val2,
+        name: 'val_2',
         type: 'scatter',
         yaxis: 'y2',
-        line: { color: 'green' }
+        line: { color: 'orange' }
       };
 
       const layout = {
-        title: 'Price vs Energy Usage',
+        title: 'Dual Axis Line Chart (val_1 vs val_2)',
         xaxis: { title: 'Date' },
-        yaxis: { title: 'Price ($)', side: 'left' },
+        yaxis: {
+          title: 'val_1',
+          titlefont: { color: 'blue' },
+          tickfont: { color: 'blue' }
+        },
         yaxis2: {
-          title: 'Energy (kWh)',
+          title: 'val_2',
+          titlefont: { color: 'orange' },
+          tickfont: { color: 'orange' },
           overlaying: 'y',
           side: 'right'
         },
-        legend: { x: 0.1, y: 1.1, orientation: 'h' }
+        legend: { x: 0, y: 1.1, orientation: 'h' }
       };
 
-      Plotly.newPlot('chart', [trace1, trace2], layout);
+      Plotly.newPlot('plot', [trace1, trace2], layout);
     }
 
-    // 🚀 5. Load data on page load
     loadData();
   </script>
-
 </body>
 </html>

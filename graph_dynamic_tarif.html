@@ -24,7 +24,7 @@
 
   <script>
     async function loadData() {
-      const response = await fetch("https://qqdcnlmlzfhugkndkrnz.supabase.co/functions/v1/bright-function");
+      const response = await fetch("https://qqdcnlmlzfhugkndkrnz.supabase.co/functions/bright-function");
       const data = await response.json();
 
       const dates = data.map(row => row.date);

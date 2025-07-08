@@ -5,23 +5,24 @@
   <title>Dual Axis Plot - Bright Function</title>
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script> <!-- Updated Plotly version -->
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-    }
-    h2 {
-      text-align: center;
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
     }
     #plot {
+      height: 100%;
       width: 100%;
-      height: 600px;
     }
     #error {
-      color: red;
       text-align: center;
-      margin-top: 20px;
+      color: red;
+      padding: 1rem;
     }
-  </style>
+</style>
+
 </head>
 <body>
   <h2>val_1 and val_2 Over Time</h2>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dynamische Prijs & Verbruik</title>
   <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+  <link rel="icon" href="data:,">
   <style>
     html, body {
       margin: 0;
@@ -97,6 +98,7 @@
           dtick: 1,
           range: [Math.min(...allHours), Math.max(...allHours)]
         },
+        uirevision: 'static',
         yaxis: {
           title: "Prijs (€ per kWh)",
           titlefont: { color: "#1f77b4" },

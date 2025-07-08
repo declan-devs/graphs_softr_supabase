@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Dynamic Tarif Plot</title>
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    display: flex; flex-direction: column; font-family: sans-serif;
+  }
+  #plot {
+    flex-grow: 1; width: 100%;
+  }
+  #error {
+    padding: 0.5rem; color: red; background: #fee; text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div id="plot"></div>
+  <div id="error"></div>
+<script>
+  async function loadData() {
+    const url = 'https://qqdcnlmlzfhugkndkrnz.supabase.co/functions/v1/dynamic-tarif-join'; // <== replace with your actual function URL
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // add authorization here if your edge function requires it, e.g.:
+          'Authorization': 'Bearer YOUR_TOKEN'
+        },
+        body: JSON.stringify({ id_pand: "demo_pand" }) // example input, adjust as needed
+      });
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const json = await res.json();
+      const data = json.data || json; // adjust if your response wraps data in `.data`
+
+      if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById('error').innerText = 'No data returned.';
+        return;
+      }
+
+      // We'll build x axis labels combining jaar + uur, e.g. "2024-00"
+      const x = data.map(d => `${d.jaar}-${d.uur}`);
+      const prijs = data.map(d => d.gemiddelde_prijs_per_kwh);
+      const verbruik = data.map(d => d.gemiddeld_verbruik_kwh_per_uur);
+
+      const tracePrijs = {
+        x, y: prijs,
+        name: 'Gemiddelde Prijs per kWh',
+        yaxis: 'y1',
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { shape: 'spline', smoothing: 0.5, color: 'blue' },
+        marker: { size: 4 }
+      };
+      const traceVerbruik = {
+        x, y: verbruik,
+        name: 'Gemiddeld Verbruik kWh per Uur',
+        yaxis: 'y2',
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { shape: 'spline', smoothing: 0.5, color: 'orange' },
+        marker: { size: 4 }
+      };
+
+      const layout = {
+        title: 'Gemiddelde Prijs & Verbruik per Jaar en Uur',
+        margin: { t: 50, b: 50, l: 70, r: 70 },
+        xaxis: { title: 'Jaar-Uur', tickangle: -45 },
+        yaxis: {
+          title: 'Prijs per kWh (€)',
+          titlefont: { color: 'blue' },
+          tickfont: { color: 'blue' }
+        },
+        yaxis2: {
+          title: 'Verbruik per Uur (kWh)',
+          titlefont: { color: 'orange' },
+          tickfont: { color: 'orange' },
+          overlaying: 'y',
+          side: 'right'
+        },
+        legend: { orientation: 'h', x: 0, y: 1.1 }
+      };
+
+      Plotly.newPlot('plot', [tracePrijs, traceVerbruik], layout, {responsive: true});
+      document.getElementById('error').innerText = '';
+    } catch(err) {
+      console.error(err);
+      document.getElementById('error').innerText = 'Failed to load data or plot: ' + err.message;
+    }
+  }
+
+  loadData();
+</script>
+</body>
+</html>

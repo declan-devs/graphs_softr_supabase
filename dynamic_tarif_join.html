@@ -22,71 +22,92 @@
   <div id="plot">Loading...</div>
   <script>
     async function loadAndPlot() {
-      const response = await fetch("https://qqdcnlmlzfhugkndkrnz.supabase.co/functions/v1/dynamic-tarif-join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json",
-                   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxZGNubG1semZodWdrbmRrcm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0MjQxNDAsImV4cCI6MjA1MjAwMDE0MH0.7Lftp_23mqrTPAdbblTrXilh6l5z5MqtGe-Vlp0jS78"
-                 },
-        body: JSON.stringify({ "id_pand": "demo_pand" }) // ← Change this dynamically if needed
-      });
+      console.log("📡 Sending request to Supabase Edge Function...");
 
-      const data = await response.json();
-      if (!Array.isArray(data) || data.length === 0) {
-        document.getElementById("plot").innerText = "Geen data beschikbaar.";
-        return;
-      }
-
-      const byYear = {};
-      data.forEach(d => {
-        if (!byYear[d.jaar]) byYear[d.jaar] = [];
-        byYear[d.jaar].push(d);
-      });
-
-      const traces = [];
-
-      for (const jaar in byYear) {
-        const rows = byYear[jaar].sort((a, b) => parseInt(a.uur) - parseInt(b.uur));
-
-        traces.push({
-          x: rows.map(r => r.uur),
-          y: rows.map(r => r.gemiddelde_prijs_per_kwh),
-          type: "scatter",
-          mode: "lines+markers",
-          name: `Prijs – ${jaar}`,
-          line: { shape: "spline", color: "#1f77b4" }
+      try {
+        const response = await fetch("https://qqdcnlmlzfhugkndkrnz.supabase.co/functions/v1/dynamic-tarif-join", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxZGNubG1semZodWdrbmRrcm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY0MjQxNDAsImV4cCI6MjA1MjAwMDE0MH0.7Lftp_23mqrTPAdbblTrXilh6l5z5MqtGe-Vlp0jS78"
+          },
+          body: JSON.stringify({ id_pand: "demo_pand" })
         });
 
-        traces.push({
-          x: rows.map(r => r.uur),
-          y: rows.map(r => r.gemiddeld_verbruik_kwh_per_uur),
-          type: "scatter",
-          mode: "lines+markers",
-          name: `Verbruik – ${jaar}`,
-          yaxis: "y2",
-          line: { shape: "spline", dash: "dot", color: "#ff7f0e" }
+        console.log("📥 Response received:", response.status);
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("❌ Unexpected response type:", contentType);
+          document.getElementById("plot").innerText = "Ongeldig antwoord van server.";
+          return;
+        }
+
+        const data = await response.json();
+        console.log("📊 Data parsed:", data);
+
+        if (!Array.isArray(data) || data.length === 0) {
+          console.warn("⚠️ Geen data ontvangen of lege array.");
+          document.getElementById("plot").innerText = "Geen data beschikbaar.";
+          return;
+        }
+
+        const byYear = {};
+        data.forEach(d => {
+          if (!byYear[d.jaar]) byYear[d.jaar] = [];
+          byYear[d.jaar].push(d);
         });
+
+        const traces = [];
+
+        for (const jaar in byYear) {
+          const rows = byYear[jaar].sort((a, b) => parseInt(a.uur) - parseInt(b.uur));
+
+          traces.push({
+            x: rows.map(r => r.uur),
+            y: rows.map(r => r.gemiddelde_prijs_per_kwh),
+            type: "scatter",
+            mode: "lines+markers",
+            name: `Prijs – ${jaar}`,
+            line: { shape: "spline", color: "#1f77b4" }
+          });
+
+          traces.push({
+            x: rows.map(r => r.uur),
+            y: rows.map(r => r.gemiddeld_verbruik_kwh_per_uur),
+            type: "scatter",
+            mode: "lines+markers",
+            name: `Verbruik – ${jaar}`,
+            yaxis: "y2",
+            line: { shape: "spline", dash: "dot", color: "#ff7f0e" }
+          });
+        }
+
+        const layout = {
+          title: "Prijs & Verbruik per Uur (per Jaar)",
+          xaxis: { title: "Uur van de dag", tickmode: "linear", dtick: 1 },
+          yaxis: {
+            title: "Prijs (€ per kWh)",
+            titlefont: { color: "#1f77b4" },
+            tickfont: { color: "#1f77b4" }
+          },
+          yaxis2: {
+            title: "Verbruik (kWh)",
+            titlefont: { color: "#ff7f0e" },
+            tickfont: { color: "#ff7f0e" },
+            overlaying: "y",
+            side: "right"
+          },
+          legend: { orientation: "h", x: 0, y: 1.2 },
+          margin: { t: 60, r: 50, l: 50, b: 50 },
+        };
+
+        console.log("📈 Plotting data...");
+        Plotly.newPlot("plot", traces, layout, { responsive: true });
+      } catch (err) {
+        console.error("🔥 Error during fetch/plot:", err);
+        document.getElementById("plot").innerText = "Fout bij laden van data.";
       }
-
-      const layout = {
-        title: "Prijs & Verbruik per Uur (per Jaar)",
-        xaxis: { title: "Uur van de dag", tickmode: "linear", dtick: 1 },
-        yaxis: {
-          title: "Prijs (€ per kWh)",
-          titlefont: { color: "#1f77b4" },
-          tickfont: { color: "#1f77b4" }
-        },
-        yaxis2: {
-          title: "Verbruik (kWh)",
-          titlefont: { color: "#ff7f0e" },
-          tickfont: { color: "#ff7f0e" },
-          overlaying: "y",
-          side: "right"
-        },
-        legend: { orientation: "h", x: 0, y: 1.2 },
-        margin: { t: 60, r: 50, l: 50, b: 50 },
-      };
-
-      Plotly.newPlot("plot", traces, layout, { responsive: true });
     }
 
     loadAndPlot();

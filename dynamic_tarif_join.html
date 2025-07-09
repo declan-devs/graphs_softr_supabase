@@ -15,8 +15,8 @@
       overflow: hidden;
     }
     #plot {
-      width: 95%;
-      height: 95%;
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -116,9 +116,19 @@
           side: "right",
           fixedrange: true
         },
-        legend: { orientation: "h", x: 0.5, y: 1.2 },
+        legend: {
+          orientation: "h", // Horizontal legend
+          x: 0.5,           // Center horizontally
+          y: 1.1,           // Move legend below the title
+          xanchor: "center", // Center alignment
+          yanchor: "bottom", // Position the legend below the title
+          itemwidth: 100,    // Width of each legend item (can help with wrapping)
+          tracegroupgap: 5,  // Space between groups of legend items
+          font: { size: 12, family: 'Arial' }  // Adjust font size for readability
+        },
         margin: { t: 80, r: 80, l: 50, b: 50 },
       };
+
 
       // 🧹 Clear "Loading..." before rendering
       document.getElementById("plot").innerHTML = "";

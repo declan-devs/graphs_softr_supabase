@@ -109,7 +109,7 @@
           title: "Prijs (€ per kWh)",
           titlefont: { color: "#1f77b4" },
           tickfont: { color: "#1f77b4" }
-          //fixedrange: true,
+          fixedrange: true
         },
         yaxis2: {
           title: "Verbruik (kWh)",
@@ -117,9 +117,8 @@
           tickfont: { color: "#ff7f0e" },
           overlaying: "y",       // Overlay the secondary y-axis with the first one
           side: "right",         // Place on the right side
-          //tickmode: "sync"
-          autoschift: true,
-          anchor: "free"
+          fixedrange: true,
+          tickmode: "sync"
         },
         legend: {
           orientation: "h",  // Horizontal layout

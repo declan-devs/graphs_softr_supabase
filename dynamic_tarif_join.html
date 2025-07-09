@@ -117,17 +117,23 @@
           fixedrange: true
         },
         legend: {
-          orientation: "h", // Horizontal legend
-          x: 0.5,           // Center horizontally
-          y: 1.1,           // Move legend below the title
-          xanchor: "center", // Center alignment
-          yanchor: "bottom", // Position the legend below the title
-          itemwidth: 100,    // Width of each legend item (can help with wrapping)
-          tracegroupgap: 5,  // Space between groups of legend items
-          font: { size: 12, family: 'Arial' }  // Adjust font size for readability
+          orientation: "h",  // Horizontal layout
+          x: 0.5,            // Center horizontally
+          y: -0.1,           // Move legend below the title and plot
+          xanchor: "center", // Center legend horizontally
+          yanchor: "top",    // Anchor at the top of the legend (adjusts position based on `y`)
+          itemwidth: 100,     // Width of each legend item
+          tracegroupgap: 5,   // Space between groups of legend items
+          font: { size: 12, family: 'Arial' }  // Font adjustments
         },
-        margin: { t: 80, r: 80, l: 50, b: 50 },
+        margin: {
+          t: 120,  // Increase top margin to fit both title and legend
+          r: 80,   // Right margin
+          l: 50,   // Left margin
+          b: 50    // Bottom margin
+        },
       };
+
 
 
       // 🧹 Clear "Loading..." before rendering

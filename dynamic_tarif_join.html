@@ -60,7 +60,6 @@
 
       sortedYears.forEach((jaar, index) => {
         const rows = byYear[jaar].sort((a, b) => parseInt(a.uur) - parseInt(b.uur));
-      
         const isOld = index === 0; // assume older year first
       
         // "Prijs" trace - Should use the primary y-axis (yaxis)
@@ -96,7 +95,13 @@
 
       const allHours = [...new Set(data.map(d => parseInt(d.uur)))];
       allHours.sort((a, b) => a - b);
-
+      
+      // Find the min and max values for both "Prijs" and "Verbruik" to set axis ranges
+      const minPrice = Math.min(...data.map(d => d.gemiddelde_prijs_per_kwh));
+      const maxPrice = Math.max(...data.map(d => d.gemiddelde_prijs_per_kwh));
+      const minVerbruik = Math.min(...data.map(d => d.gemiddeld_verbruik_kwh_per_uur));
+      const maxVerbruik = Math.max(...data.map(d => d.gemiddeld_verbruik_kwh_per_uur));
+      
       const layout = {
         title: "Prijs & Verbruik per Uur (per Jaar)",
         xaxis: {
@@ -112,9 +117,9 @@
           tickfont: { color: "#1f77b4" },
           fixedrange: true,
           rangemode: "normal",    // Normal scaling, no forced zero
-          scaleanchor: "y2",     // This ties the price axis range to the consumption axis
           overlaying: "y",       // Makes sure this axis is overlayed on the primary y-axis
           side: "left",          // Align on the left
+          range: [minPrice, maxPrice]  // Set the price axis range
         },
         yaxis2: {
           title: "Verbruik (kWh)",
@@ -124,7 +129,7 @@
           side: "right",         // Place on the right side
           fixedrange: true,
           rangemode: "normal",    // Same scale mode as the price axis
-          scaleanchor: "y",      // This links the secondary y-axis to the first one
+          range: [minVerbruik, maxVerbruik]  // Set the consumption axis range
         },
         legend: {
           orientation: "h",  // Horizontal layout

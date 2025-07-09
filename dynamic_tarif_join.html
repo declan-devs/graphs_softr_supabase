@@ -60,9 +60,10 @@
 
       sortedYears.forEach((jaar, index) => {
         const rows = byYear[jaar].sort((a, b) => parseInt(a.uur) - parseInt(b.uur));
-
+      
         const isOld = index === 0; // assume older year first
-
+      
+        // "Prijs" trace - Should use the primary y-axis (yaxis)
         traces.push({
           x: rows.map(r => r.uur),
           y: rows.map(r => r.gemiddelde_prijs_per_kwh),
@@ -72,16 +73,18 @@
           line: {
             shape: "spline",
             color: isOld ? "#aec7e8" : "#1f77b4"
-          }
+          },
+          yaxis: "y"  // Primary axis for price
         });
-
+      
+        // "Verbruik" trace - Should use the secondary y-axis (yaxis2)
         traces.push({
           x: rows.map(r => r.uur),
           y: rows.map(r => r.gemiddeld_verbruik_kwh_per_uur),
           type: "scatter",
           mode: "lines+markers",
           name: `Verbruik – ${jaar}`,
-          yaxis: "y2",
+          yaxis: "y2",  // Secondary axis for consumption
           line: {
             shape: "spline",
             dash: "dot",
@@ -89,6 +92,7 @@
           }
         });
       });
+
 
       const allHours = [...new Set(data.map(d => parseInt(d.uur)))];
       allHours.sort((a, b) => a - b);

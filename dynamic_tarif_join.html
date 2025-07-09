@@ -96,12 +96,6 @@
       const allHours = [...new Set(data.map(d => parseInt(d.uur)))];
       allHours.sort((a, b) => a - b);
       
-      // Find the min and max values for both "Prijs" and "Verbruik" to set axis ranges
-      const minPrice = Math.min(...data.map(d => d.gemiddelde_prijs_per_kwh));
-      const maxPrice = Math.max(...data.map(d => d.gemiddelde_prijs_per_kwh));
-      const minVerbruik = Math.min(...data.map(d => d.gemiddeld_verbruik_kwh_per_uur));
-      const maxVerbruik = Math.max(...data.map(d => d.gemiddeld_verbruik_kwh_per_uur));
-      
       const layout = {
         title: "Prijs & Verbruik per Uur (per Jaar)",
         xaxis: {
@@ -116,10 +110,6 @@
           titlefont: { color: "#1f77b4" },
           tickfont: { color: "#1f77b4" },
           fixedrange: true,
-          rangemode: "normal",    // Normal scaling, no forced zero
-          overlaying: "y",       // Makes sure this axis is overlayed on the primary y-axis
-          side: "left",          // Align on the left
-          range: [minPrice, maxPrice]  // Set the price axis range
         },
         yaxis2: {
           title: "Verbruik (kWh)",
@@ -128,8 +118,6 @@
           overlaying: "y",       // Overlay the secondary y-axis with the first one
           side: "right",         // Place on the right side
           fixedrange: true,
-          rangemode: "normal",    // Same scale mode as the price axis
-          range: [minVerbruik, maxVerbruik]  // Set the consumption axis range
         },
         legend: {
           orientation: "h",  // Horizontal layout

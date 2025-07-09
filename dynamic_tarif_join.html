@@ -119,20 +119,26 @@
         legend: {
           orientation: "h",  // Horizontal layout
           x: 0.5,            // Center horizontally
-          y: 1.05,           // Move legend below the title and plot
+          y: 1.05,           // Place the legend just below the title
           xanchor: "center", // Center legend horizontally
-          yanchor: "bottom",    // Anchor at the top of the legend (adjusts position based on `y`)
+          yanchor: "bottom", // Align the bottom of the legend with `y`
           itemwidth: 100,     // Width of each legend item
           tracegroupgap: 5,   // Space between groups of legend items
-          font: { size: 12, family: 'Arial' }  // Font adjustments
+          font: { size: 12, family: 'Arial' },
+          traceorder: 'normal', // Legend items order
+          itemclick: 'toggle', // Click on a legend item will toggle visibility
+          valign: "middle"    // Align vertically
         },
         margin: {
-          t: 120,  // Increase top margin to fit both title and legend
+          t: 120,  // Increase top margin to make space for title and legend
           r: 80,   // Right margin
           l: 50,   // Left margin
           b: 50    // Bottom margin
         },
+        responsive: true, // Make plot responsive to screen size changes
       };
+
+
 
 
 

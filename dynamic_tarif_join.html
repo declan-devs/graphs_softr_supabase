@@ -106,15 +106,21 @@
           title: "Prijs (€ per kWh)",
           titlefont: { color: "#1f77b4" },
           tickfont: { color: "#1f77b4" },
-          fixedrange: true
+          fixedrange: true,
+          rangemode: "normal",    // Normal scaling, no forced zero
+          scaleanchor: "y2",     // This ties the price axis range to the consumption axis
+          overlaying: "y",       // Makes sure this axis is overlayed on the primary y-axis
+          side: "left",          // Align on the left
         },
         yaxis2: {
           title: "Verbruik (kWh)",
           titlefont: { color: "#ff7f0e" },
           tickfont: { color: "#ff7f0e" },
-          overlaying: "y",
-          side: "right",
-          fixedrange: true
+          overlaying: "y",       // Overlay the secondary y-axis with the first one
+          side: "right",         // Place on the right side
+          fixedrange: true,
+          rangemode: "normal",    // Same scale mode as the price axis
+          scaleanchor: "y",      // This links the secondary y-axis to the first one
         },
         legend: {
           orientation: "h",  // Horizontal layout
@@ -137,9 +143,6 @@
         },
         responsive: true, // Make plot responsive to screen size changes
       };
-
-
-
 
 
       // 🧹 Clear "Loading..." before rendering
